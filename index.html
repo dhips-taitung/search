@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>關鍵字查詢整合系統</title>
+
+<style>
+body { font-family: sans-serif; padding: 20px; }
+table { border-collapse: collapse; margin-top: 10px; }
+th, td { padding: 8px; border: 1px solid #ccc; }
+button { margin-right: 10px; padding: 6px 12px; cursor: pointer; }
+.active { background: #4CAF50; color: white; }
+hr { margin:20px 0; }
+</style>
+
+<script>
+
+// =========================
+// 三個 GAS 連結
+// =========================
+const GAS_STUDENT = "https://script.google.com/macros/s/AKfycbyHkQ3truppoRzvL-QBuex-cN4_idHnP0uwsrIiyOsX4E30bKO3cp9B8Aq-8f8uvg-oTg/exec";
+const GAS_PARENT  = "https://script.google.com/macros/s/AKfycbwwPt4QXfhij0Vc2xnUXXhyeG_EHfjIO8CuvG-6wnCxcMztlCji8ONatc5JCsU6NkYv/exec";
+const GAS_CLASS   = "https://script.google.com/macros/s/AKfycbw76LVJXwm3y1TdkimqQMZsrxqudtZX4sa3Ir5vvkDbSUPZyjB9XzZpeFUGdMcvijgvvA/exec";
+
+let currentMode = "student";
+
+// =========================
+// 驗證碼（只驗證一次）
+// =========================
+function getAuthCode() {
+  let code = sessionStorage.getItem("authCode");
+  if (!code) {
+    code = prompt("請輸入驗證碼：");
+    if (!code) return null;
+    sessionStorage.setItem("authCode", code);
+  }
+  return code;
+}
+
+// =========================
+// 切換查詢模式
+// =========================
+function switchMode(mode) {
+
+  currentMode = mode;
+  document.getElementById("uid").value = "";
+  document.getElementById("order_status").innerHTML = "";
+
+  document.querySelectorAll(".tabBtn").forEach(btn=>btn.classList.remove("active"));
+  document.getElementById("btn_"+mode).classList.add("active");
+
+  if(mode==="student"){
+    document.getElementById("title").innerText="學生資料查詢系統";
+    document.getElementById("uid").placeholder="請輸入學生關鍵字";
+  }
+  else if(mode==="parent"){
+    document.getElementById("title").innerText="家長資料查詢系統";
+    document.getElementById("uid").placeholder="請輸入家長關鍵字";
+  }
+  else{
+    document.getElementById("title").innerText="班級資料查詢系統";
+    document.getElementById("uid").placeholder="請輸入班級關鍵字";
+  }
+}
+
+// =========================
+// 生日格式統一處理
+// =========================
+function formatDate(value){
+
+  if (!value) return "";
+
+  value = value.toString().trim();
+
+  if (value.includes("T")) return value.split("T")[0];
+
+  if (value.includes("/")) return value.replace(/\//g,"-");
+
+  const d = new Date(value);
+  if(!isNaN(d)){
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const day=String(d.getDate()).padStart(2,'0');
+    return y+"-"+m+"-"+day;
+  }
+
+  return value;
+}
+
+// =========================
+// 查詢主程式
+// =========================
+function doQuery(){
+
+  const keyword = document.getElementById("uid").value.trim();
+  document.getElementById("order_status").innerHTML="";
+
+  if(!keyword){
+    alert("請輸入關鍵字");
+    return;
+  }
+
+  const code = getAuthCode();
+  if(!code) return;
+
+  setLoading(true);
+
+  let url="";
+  if(currentMode==="student") url=GAS_STUDENT;
+  if(currentMode==="parent")  url=GAS_PARENT;
+  if(currentMode==="class")   url=GAS_CLASS;
+
+  const get_url = url+"?uid="+encodeURIComponent(keyword)+"&code="+encodeURIComponent(code);
+
+  fetch(get_url)
+  .then(r=>r.text())
+  .then(text=>{
+
+    setLoading(false);
+
+    let obj;
+    try{ obj=JSON.parse(text); }
+    catch(e){ alert("資料解析失敗"); return; }
+
+    if(obj.auth===false){
+      alert(obj.message||"驗證碼錯誤");
+      sessionStorage.removeItem("authCode");
+      return;
+    }
+
+    if(obj.ok===false){
+      alert(obj.message||"查詢發生錯誤");
+      return;
+    }
+
+    if(!Array.isArray(obj)){
+      alert("查詢錯誤");
+      return;
+    }
+
+    var html='<table width="100%">';
+
+    for(var i=0;i<obj.length;i++){
+
+      var tag=(i===0)?"th":"td";
+      var bg=(i===0)?' style="background:#eee;"':'';
+
+      html+="<tr"+bg+">";
+
+      for(var j=0;j<obj[i].data.length;j++){
+
+        let value=obj[i].data[j];
+
+        if(j===5 && i!==0){
+          value=formatDate(value);
+        }
+
+        html+="<"+tag+">"+value+"</"+tag+">";
+      }
+
+      html+="</tr>";
+    }
+
+    html+="</table>";
+
+    document.getElementById("order_status").innerHTML=html;
+
+    if(obj.length<=1){
+      document.getElementById("order_status").innerHTML+="<p>查無資料</p>";
+    }
+
+  })
+  .catch(err=>{
+    setLoading(false);
+    alert("系統連線失敗："+err.message);
+  });
+}
+
+// =========================
+// Loading 控制
+// =========================
+function setLoading(isLoading){
+  var btn=document.getElementById("btnQuery");
+  var input=document.getElementById("uid");
+  btn.disabled=input.disabled=isLoading;
+  btn.value=isLoading?"查詢中...":"查詢";
+}
+
+window.addEventListener("DOMContentLoaded",function(){
+  switchMode("student");
+
+  document.getElementById("uid").addEventListener("keydown",function(e){
+    if(e.key==="Enter") doQuery();
+  });
+});
+</script>
+</head>
+
+<body>
+
+<h3 id="title"></h3>
+
+<!-- 切換按鈕 -->
+<button id="btn_student" class="tabBtn active" onclick="switchMode('student')">學生查詢</button>
+<button id="btn_parent"  class="tabBtn" onclick="switchMode('parent')">家長查詢</button>
+<button id="btn_class"   class="tabBtn" onclick="switchMode('class')">班級查詢</button>
+
+<hr>
+
+關鍵字：
+<input type="text" id="uid" placeholder="">
+<input type="button" id="btnQuery" value="查詢" onclick="doQuery()">
+
+<hr>
+
+<div id="order_status"></div>
+
+</body>
+</html>
