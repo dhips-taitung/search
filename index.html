@@ -36,26 +36,39 @@
   }
 
   /* ============================
-     搜尋區塊
+     區塊顯示控制
      ============================ */
-  .search-card {
+  .section {
+    display: none; /* 預設隱藏所有區塊 */
+  }
+  .section.active {
+    display: block; /* 顯示作用中區塊 */
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  /* ============================
+     卡片風格
+     ============================ */
+  .card {
     background: white;
-    padding: 20px;
+    padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    margin-bottom: 25px;
-    position: sticky;
-    top: 10px;
-    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
   }
 
   .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    margin-bottom: 15px;
   }
 
-  input[type="text"] {
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+  }
+
+  input[type="text"], input[type="password"] {
     width: 100%;
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
@@ -63,21 +76,15 @@
     font-size: 16px;
     outline: none;
     transition: border-color 0.3s;
-    appearance: none;
   }
 
-  input[type="text"]:focus {
+  input[type="text"]:focus, input[type="password"]:focus {
     border-color: #0277bd;
   }
 
-  /* 按鈕群組 */
-  .btn-group {
-    display: flex;
-    gap: 10px;
-  }
-
-  input[type="button"] {
-    flex: 1; /* 按鈕平均分配寬度 */
+  /* 通用按鈕 */
+  .btn {
+    width: 100%;
     padding: 12px;
     color: white;
     border: none;
@@ -85,64 +92,65 @@
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    min-width: 100px;
+    transition: opacity 0.2s, transform 0.1s;
+    text-align: center;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { background-color: #ccc !important; cursor: wait; }
+
+  .btn-primary { background-color: #0277bd; }
+  .btn-success { background-color: #2e7d32; }
+  .btn-danger { background-color: #d32f2f; margin-top: 10px; }
+  .btn-warning { background-color: #f57c00; }
+
+  /* 查詢頁面的按鈕群組 */
+  .query-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .query-btn-group .btn {
+    flex: 1;
   }
 
-  input[type="button"]:active {
-    transform: scale(0.98);
+  /* 導覽列 */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   }
-  
-  input[type="button"]:disabled {
-    background-color: #ccc !important;
-    cursor: wait;
+  .user-info {
+    font-weight: bold;
+    color: #0277bd;
   }
-
-  /* 學生查詢按鈕 (藍色) */
-  .btn-student {
-    background-color: #0277bd;
-  }
-  .btn-student:hover { background-color: #01579b; }
-
-  /* 家長查詢按鈕 (綠色) */
-  .btn-parent {
-    background-color: #2e7d32;
-  }
-  .btn-parent:hover { background-color: #1b5e20; }
-
-  /* 電腦版/平板樣式 */
-  @media (min-width: 550px) {
-    .input-group { 
-      flex-direction: row; 
-      align-items: center;
-    }
-    input[type="text"] {
-      flex: 2;
-    }
-    .btn-group {
-      flex: 1.5;
-    }
+  .logout-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
   }
 
   /* ============================
      結果卡片顯示
      ============================ */
-  #order_status {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-
   .student-card {
     background: white;
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     overflow: hidden;
-    animation: fadeIn 0.3s ease-in-out;
+    margin-bottom: 15px;
     border: 1px solid #ddd;
+    animation: fadeIn 0.3s ease-in-out;
   }
 
-  /* 卡片主標題：白色背景、深藍字、灰底線 */
   .card-header {
     background: #fff;
     color: #0277bd;
@@ -150,15 +158,10 @@
     font-weight: bold;
     font-size: 1.25em;
     border-bottom: 2px solid #f0f0f0;
-    display: flex;
-    align-items: center;
   }
   
-  .card-body {
-    padding: 15px;
-  }
+  .card-body { padding: 15px; }
 
-  /* 單筆資料列：左右並排 */
   .data-row {
     display: flex;
     border: 1px solid #e0e0e0;
@@ -166,12 +169,6 @@
     margin-bottom: 8px;
     overflow: hidden;
   }
-
-  .data-row:last-child {
-    margin-bottom: 0;
-  }
-
-  /* 左側：標題 (Label) - 淡藍色背景 */
   .data-label {
     background-color: #e1f5fe;
     color: #01579b;
@@ -179,23 +176,12 @@
     min-width: 110px;
     padding: 10px;
     font-weight: bold;
-    font-size: 0.95em;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    display: flex; align-items: center;
     border-right: 1px solid #e0e0e0;
   }
-
-  /* 右側：數值 (Value) - 白色背景 */
   .data-value {
-    background-color: #fff;
-    color: #333;
-    padding: 10px;
-    flex: 1;
-    text-align: left;
+    background-color: #fff; color: #333; padding: 10px; flex: 1;
     word-break: break-all;
-    display: flex;
-    align-items: center;
   }
 
   @media (max-width: 340px) {
@@ -203,27 +189,17 @@
     .data-value { font-size: 0.9em; }
   }
 
-  .no-data, .error {
-    text-align: center;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    color: #666;
-  }
-  .error { color: #d93025; background: #fce8e6; }
+  .no-data { text-align: center; padding: 20px; color: #666; background: white; border-radius: 8px; }
+  .error { color: #d93025; background: #fce8e6; padding: 10px; border-radius: 8px; text-align: center; margin-top: 10px; }
 
   .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #0277bd;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-    margin: 20px auto;
+    border: 4px solid #f3f3f3; border-top: 4px solid #0277bd; border-radius: 50%;
+    width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto;
   }
-
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
 
 </style>
 
@@ -235,59 +211,190 @@
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwXkHHy97vRpZcH_so__IrV1Moda5uVBn1wJ9s7SbneHviJ6ySQqhFbaYHvBrhJ0jwz/exec";
 
 // =========================
-// 驗證碼處理
+// 狀態管理
 // =========================
-function getAuthCode() {
-  let code = sessionStorage.getItem("authCode");
+let currentUser = {
+  code: null,
+  name: "使用者"
+};
+
+// 初始化
+window.addEventListener("DOMContentLoaded", function(){
+  checkLoginStatus();
+
+  // 綁定查詢頁面的 Enter 鍵
+  document.getElementById("uid").addEventListener("keydown", function(e){
+    if(e.key === "Enter") doQuery('student');
+  });
+
+  // 綁定登入頁面的 Enter 鍵
+  document.getElementById("loginCode").addEventListener("keydown", function(e){
+    if(e.key === "Enter") doLogin();
+  });
+  
+  // 綁定修改驗證碼的 Enter 鍵
+  document.getElementById("newAuthCode").addEventListener("keydown", function(e){
+    if(e.key === "Enter") doChangeCode();
+  });
+});
+
+// 檢查是否已登入
+function checkLoginStatus() {
+  const savedCode = sessionStorage.getItem("authCode");
+  const savedName = sessionStorage.getItem("authName");
+
+  if (savedCode) {
+    currentUser.code = savedCode;
+    currentUser.name = savedName || "使用者";
+    showSection("main-section");
+    updateUserInfo();
+  } else {
+    showSection("login-section");
+  }
+}
+
+// 切換頁面顯示
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(el => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+// 更新用戶資訊顯示
+function updateUserInfo() {
+  document.getElementById("displayUser").textContent = currentUser.name;
+}
+
+// =========================
+// 1. 登入功能
+// =========================
+function doLogin() {
+  const codeInput = document.getElementById("loginCode");
+  const code = codeInput.value.trim();
+  const msgBox = document.getElementById("loginMsg");
+  
   if (!code) {
-    code = prompt("請輸入驗證碼：");
-    if (!code) return null;
-    sessionStorage.setItem("authCode", code);
+    alert("請輸入驗證碼");
+    return;
   }
-  return code;
+
+  msgBox.innerHTML = '<div class="spinner" style="width:20px;height:20px;margin:0 auto;"></div>';
+  document.getElementById("btnLogin").disabled = true;
+
+  // 發送登入請求
+  const url = GAS_URL + "?op=login&code=" + encodeURIComponent(code);
+
+  fetch(url)
+  .then(r => r.json())
+  .then(res => {
+    document.getElementById("btnLogin").disabled = false;
+    msgBox.innerHTML = "";
+
+    if (res.ok) {
+      // 登入成功，儲存狀態
+      sessionStorage.setItem("authCode", code);
+      sessionStorage.setItem("authName", res.username);
+      currentUser.code = code;
+      currentUser.name = res.username;
+      
+      codeInput.value = ""; // 清空登入輸入框
+      
+      // 【修改點】登入成功後，確保修改驗證碼的框格是空的
+      document.getElementById("newAuthCode").value = ""; 
+
+      checkLoginStatus();
+    } else {
+      msgBox.innerHTML = '<div class="error">' + res.message + '</div>';
+    }
+  })
+  .catch(err => {
+    document.getElementById("btnLogin").disabled = false;
+    msgBox.innerHTML = '<div class="error">連線失敗</div>';
+  });
 }
 
 // =========================
-// 日期格式化 (強制西元年月日)
+// 2. 登出功能
 // =========================
-function formatDate(value){
-  if (!value) return "";
-  value = String(value).trim();
-  
-  if (value.includes("T")) {
-    return value.split("T")[0];
+function doLogout() {
+  if(confirm("確定要登出嗎？")) {
+    sessionStorage.clear();
+    currentUser = { code: null, name: "" };
+    document.getElementById("order_status").innerHTML = ""; // 清空查詢結果
+    document.getElementById("newAuthCode").value = ""; // 清空修改框
+    showSection("login-section");
   }
-  
-  const d = new Date(value);
-  if(!isNaN(d) && value.length > 5){
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const day = String(d.getDate()).padStart(2,'0');
-    return y + "-" + m + "-" + day;
-  }
-  
-  return value;
 }
 
 // =========================
-// 查詢主程式
-// searchMode: 'student' | 'parent'
+// 3. 修改驗證碼功能
+// =========================
+function doChangeCode() {
+  const newCodeInput = document.getElementById("newAuthCode");
+  const newCode = newCodeInput.value.trim();
+  const oldCode = currentUser.code;
+  const msgBox = document.getElementById("changeMsg");
+
+  if (!newCode) {
+    alert("請輸入新的驗證碼");
+    return;
+  }
+  if (!confirm("確定要將驗證碼修改為：「" + newCode + "」嗎？\n修改成功後需要重新登入。")) {
+    return;
+  }
+
+  document.getElementById("btnChange").disabled = true;
+  msgBox.innerHTML = "處理中...";
+
+  // op=change
+  const url = GAS_URL + 
+              "?op=change" + 
+              "&code=" + encodeURIComponent(oldCode) + 
+              "&newCode=" + encodeURIComponent(newCode);
+
+  fetch(url)
+  .then(r => r.json())
+  .then(res => {
+    document.getElementById("btnChange").disabled = false;
+    
+    if (res.ok) {
+      alert(res.message);
+      
+      // 【修改點】修改成功後，立即清空輸入框
+      newCodeInput.value = ""; 
+      
+      // 強制登出並重整頁面
+      sessionStorage.clear();
+      location.reload(); 
+    } else {
+      msgBox.innerHTML = '<div class="error">' + res.message + '</div>';
+    }
+  })
+  .catch(err => {
+    document.getElementById("btnChange").disabled = false;
+    msgBox.innerHTML = '<div class="error">系統連線失敗</div>';
+  });
+}
+
+// =========================
+// 4. 查詢功能 (學生/家長)
 // =========================
 function doQuery(searchMode){
-
   const inputEl = document.getElementById("uid");
   const keyword = inputEl.value.trim();
   const resultDiv = document.getElementById("order_status");
-  
-  inputEl.blur(); // 收起鍵盤
+  const code = currentUser.code;
+
+  inputEl.blur(); 
   
   if(!keyword){
     alert("請輸入關鍵字");
     return;
   }
-
-  const code = getAuthCode();
-  if(!code) return;
+  if(!code) {
+    alert("尚未登入");
+    doLogout();
+    return;
+  }
 
   // 清空輸入框
   inputEl.value = ""; 
@@ -295,25 +402,21 @@ function doQuery(searchMode){
   setLoading(true);
   resultDiv.innerHTML = '<div class="spinner"></div><div style="text-align:center;color:#666;">查詢中...</div>';
 
-  // 組合 URL，傳遞 mode 參數
-  const get_url = GAS_URL + 
-                  "?uid=" + encodeURIComponent(keyword) + 
-                  "&code=" + encodeURIComponent(code) + 
-                  "&mode=" + encodeURIComponent(searchMode);
+  // op=query (預設), mode=student|parent
+  const url = GAS_URL + 
+              "?op=query" +
+              "&uid=" + encodeURIComponent(keyword) + 
+              "&code=" + encodeURIComponent(code) + 
+              "&mode=" + encodeURIComponent(searchMode);
 
-  fetch(get_url)
-  .then(r => r.text())
-  .then(text => {
+  fetch(url)
+  .then(r => r.json())
+  .then(obj => {
     setLoading(false);
 
-    let obj;
-    try { obj = JSON.parse(text); } 
-    catch(e) { resultDiv.innerHTML = '<div class="error">資料解析失敗</div>'; return; }
-
     if(obj.auth === false){
-      alert(obj.message || "驗證碼錯誤");
-      sessionStorage.removeItem("authCode");
-      resultDiv.innerHTML = "";
+      alert(obj.message || "驗證碼無效，請重新登入");
+      doLogout();
       return;
     }
 
@@ -328,50 +431,7 @@ function doQuery(searchMode){
       return;
     }
 
-    // ===== 產生 HTML =====
-    const headers = obj[0].data; 
-    let html = "";
-
-    // 從 i=1 開始 (避開標題列)
-    for(let i = 1; i < obj.length; i++){
-      const rowData = obj[i].data;
-      
-      // 卡牌主標題：使用 A 欄資料 (index 0)
-      const titleData = rowData[0] || ("資料 #" + i);
-
-      html += `
-        <div class="student-card">
-          <div class="card-header">${titleData}</div>
-          <div class="card-body">
-      `;
-
-      // 遍歷所有欄位
-      for(let j = 0; j < rowData.length; j++){
-        
-        // 跳過 A 欄 (index 0)
-        if(j === 0) continue;
-
-        let label = headers[j] || ("欄位" + (j+1));
-        let value = rowData[j];
-
-        // 格式化 G 欄生日 (index 6, A=0, B=1...G=6)
-        if(j === 6) {
-           value = formatDate(value);
-        }
-
-        html += `
-          <div class="data-row">
-            <div class="data-label">${label}</div>
-            <div class="data-value">${value}</div>
-          </div>
-        `;
-      }
-      
-      html += `</div></div>`;
-    }
-
-    resultDiv.innerHTML = html;
-
+    renderCards(obj);
   })
   .catch(err => {
     setLoading(false);
@@ -379,21 +439,62 @@ function doQuery(searchMode){
   });
 }
 
-// UI 狀態控制
-function setLoading(isLoading){
-  var btnS = document.getElementById("btnStudent");
-  var btnP = document.getElementById("btnParent");
-  var input = document.getElementById("uid");
-  
-  btnS.disabled = btnP.disabled = input.disabled = isLoading;
+// 渲染卡片
+function renderCards(obj) {
+  const headers = obj[0].data; 
+  let html = "";
+
+  for(let i = 1; i < obj.length; i++){
+    const rowData = obj[i].data;
+    const titleData = rowData[0] || ("資料 #" + i); 
+
+    html += `
+      <div class="student-card">
+        <div class="card-header">${titleData}</div>
+        <div class="card-body">
+    `;
+
+    for(let j = 0; j < rowData.length; j++){
+      if(j === 0) continue; 
+
+      let label = headers[j] || ("欄位" + (j+1));
+      let value = rowData[j];
+
+      if(j === 6) value = formatDate(value); 
+
+      html += `
+        <div class="data-row">
+          <div class="data-label">${label}</div>
+          <div class="data-value">${value}</div>
+        </div>
+      `;
+    }
+    html += `</div></div>`;
+  }
+  document.getElementById("order_status").innerHTML = html;
 }
 
-window.addEventListener("DOMContentLoaded", function(){
-  // Enter 鍵預設觸發學生查詢
-  document.getElementById("uid").addEventListener("keydown", function(e){
-    if(e.key === "Enter") doQuery('student');
-  });
-});
+// 日期格式化
+function formatDate(value){
+  if (!value) return "";
+  value = String(value).trim();
+  if (value.includes("T")) return value.split("T")[0];
+  const d = new Date(value);
+  if(!isNaN(d) && value.length > 5){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return y + "-" + m + "-" + day;
+  }
+  return value;
+}
+
+// 查詢狀態 UI 控制
+function setLoading(isLoading){
+  document.getElementById("btnStudent").disabled = isLoading;
+  document.getElementById("btnParent").disabled = isLoading;
+  document.getElementById("uid").disabled = isLoading;
+}
 
 </script>
 </head>
@@ -401,21 +502,58 @@ window.addEventListener("DOMContentLoaded", function(){
 <body>
 
 <div class="container">
-  <h2>學生資料查詢系統</h2>
-
-  <div class="search-card">
-    <div class="input-group">
-      <input type="text" id="uid" placeholder="請輸入關鍵字">
-      
-      <div class="btn-group">
-        <input type="button" id="btnStudent" class="btn-student" value="學生查詢" onclick="doQuery('student')">
-        <input type="button" id="btnParent" class="btn-parent" value="家長查詢" onclick="doQuery('parent')">
+  
+  <!-- ====== 1. 登入頁面 ====== -->
+  <div id="login-section" class="section">
+    <h2>資料查詢系統登入</h2>
+    <div class="card">
+      <div class="input-group">
+        <label>請輸入驗證碼：</label>
+        <input type="password" id="loginCode" placeholder="驗證碼">
       </div>
-
+      <button id="btnLogin" class="btn btn-primary" onclick="doLogin()">登入</button>
+      <div id="loginMsg" style="margin-top:10px;"></div>
     </div>
   </div>
 
-  <div id="order_status"></div>
+  <!-- ====== 2. 系統主頁面 ====== -->
+  <div id="main-section" class="section">
+    
+    <div class="navbar">
+      <div>歡迎，<span id="displayUser" class="user-info"></span></div>
+      <button class="logout-btn" onclick="doLogout()">登出</button>
+    </div>
+
+    <!-- 查詢區塊 -->
+    <h2>學生/家長 資料查詢</h2>
+    <div class="card">
+      <div class="input-group">
+        <input type="text" id="uid" placeholder="請輸入關鍵字">
+        <div class="query-btn-group">
+          <button id="btnStudent" class="btn btn-primary" onclick="doQuery('student')">學生查詢</button>
+          <button id="btnParent" class="btn btn-success" onclick="doQuery('parent')">家長查詢</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="order_status"></div>
+
+    <hr>
+
+    <!-- 修改驗證碼區塊 -->
+    <div class="card" style="background:#fff8e1; border:1px solid #ffecb3;">
+      <h3 style="margin-top:0; color:#f57c00; font-size:1.2em;">修改驗證碼</h3>
+      <div class="input-group">
+        <label>輸入新的驗證碼：</label>
+        <!-- 加入 autocomplete="off" 防止瀏覽器自動帶入舊資料 -->
+        <input type="text" id="newAuthCode" placeholder="新驗證碼" autocomplete="off">
+      </div>
+      <button id="btnChange" class="btn btn-warning" onclick="doChangeCode()">確認修改</button>
+      <div id="changeMsg" style="margin-top:10px; color:#d84315;"></div>
+    </div>
+
+  </div>
+
 </div>
 
 </body>
